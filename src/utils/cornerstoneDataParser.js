@@ -1,7 +1,8 @@
-import UtilsCore from "../core/core.utils";
-import * as OpenJPEG from "OpenJPEG.js/dist/openJPEG-DynamicMemory-browser";
-import {RLEDecoder} from "../decoders/decoders.rle";
-import {getNumberString, getNumberValue, getValue} from "./index";
+import UtilsCore from '../core/core.utils';
+import * as OpenJPEG from 'OpenJPEG.js/dist/openJPEG-DynamicMemory-browser';
+import {RLEDecoder} from '../decoders/decoders.rle';
+import {getNumberString, getNumberValue, getValue} from './index';
+import getNumberValues from './getNumberValues';
 
 export default class CornerstoneDataParser {
     constructor(metaData) {
@@ -165,7 +166,7 @@ export default class CornerstoneDataParser {
      * @return {*}
      */
     sopInstanceUID(frameIndex = 0) {
-        return this._findStringEverywhere('2005140f', '00080018', frameIndex);
+        return getValue(this.metaData['00080018']);
     }
 
     /**
@@ -320,22 +321,12 @@ export default class CornerstoneDataParser {
     }
 
     imageOrientation(frameIndex = 0) {
-        // expect frame index to start at 0!
-        let imageOrientation = this._findStringEverywhere('00209116', '00200037', frameIndex);
-
-        // format image orientation ('1\0\0\0\1\0') to array containing 6 numbers
-        if (imageOrientation) {
-            // make sure we return a number! (not a string!)
-            // might not need to split (floatString + index)
-            imageOrientation = imageOrientation.split('\\').map(UtilsCore.stringToNumber);
-        }
-
-        return imageOrientation;
+        return getNumberValues(this.metaData['00200037'], 6);
     }
 
     referencedSegmentNumber(frameIndex = 0) {
         let referencedSegmentNumber = -1;
-        let referencedSegmentNumberElement = this._findInGroupSequence('52009230', '0062000a', frameIndex,);
+        let referencedSegmentNumberElement = this._findInGroupSequence('52009230', '0062000a', frameIndex);
 
         if (referencedSegmentNumberElement !== null) {
             referencedSegmentNumber = getNumberValue(referencedSegmentNumberElement['0062000b']);
@@ -345,30 +336,11 @@ export default class CornerstoneDataParser {
     }
 
     pixelAspectRatio() {
-        let pixelAspectRatio = [
-            this.metaData.intString('00280034', 0),
-            this.metaData.intString('00280034', 1),
-        ];
-
-        // need something smarter!
-        if (typeof pixelAspectRatio[0] === 'undefined') {
-            pixelAspectRatio = null;
-        }
-
-        // make sure we return a number! (not a string!)
-        return pixelAspectRatio;
+        return getNumberValues(this.metaData['00280034'], 2);
     }
 
     imagePosition(frameIndex = 0) {
-        let imagePosition = this._findStringEverywhere('00209113', '00200032', frameIndex);
-
-        // format image orientation ('1\0\0\0\1\0') to array containing 6 numbers
-        if (imagePosition) {
-            // make sure we return a number! (not a string!)
-            imagePosition = imagePosition.split('\\').map(UtilsCore.stringToNumber);
-        }
-
-        return imagePosition;
+        return getNumberValues(this.metaData['00200032'], 3);
     }
 
     instanceNumber(frameIndex = 0) {
@@ -404,28 +376,7 @@ export default class CornerstoneDataParser {
     }
 
     pixelSpacing(frameIndex = 0) {
-        // expect frame index to start at 0!
-        let pixelSpacing = this._findStringEverywhere('00289110', '00280030', frameIndex);
-
-        if (pixelSpacing === null) {
-            pixelSpacing = getValue(this.metaData['00181164']);
-
-            if (typeof pixelSpacing === 'undefined') {
-                pixelSpacing = null;
-            }
-        }
-
-        if (pixelSpacing) {
-            const splittedSpacing = pixelSpacing.split('\\');
-            if (splittedSpacing.length !== 2) {
-                console.error(`DICOM spacing format is not supported (could not split string on "\\"): ${pixelSpacing}`);
-                pixelSpacing = null;
-            } else {
-                pixelSpacing = splittedSpacing.map(UtilsCore.stringToNumber);
-            }
-        }
-
-        return pixelSpacing;
+        return getNumberValues(this.metaData['00280030'], 2);
     }
 
     ultrasoundRegions(frameIndex = 0) {
@@ -529,11 +480,11 @@ export default class CornerstoneDataParser {
     }
 
     rescaleIntercept(frameIndex = 0) {
-        return this._findFloatStringInFrameGroupSequence('00289145', '00281052', frameIndex);
+        return getNumberValue(this.metaData['00281052']);
     }
 
     rescaleSlope(frameIndex = 0) {
-        return this._findFloatStringInFrameGroupSequence('00289145', '00281053', frameIndex);
+        return getNumberValue(this.metaData['00281053']);
     }
 
     windowCenter(frameIndex = 0) {
@@ -545,7 +496,7 @@ export default class CornerstoneDataParser {
     }
 
     sliceThickness(frameIndex = 0) {
-        return this._findFloatStringInFrameGroupSequence('00289110', '00180050', frameIndex);
+        return getNumberValue(this.metaData['00180050']);
     }
 
     spacingBetweenSlices(frameIndex = 0) {
@@ -645,6 +596,7 @@ export default class CornerstoneDataParser {
 
     _findInGroupSequence(sequence, subsequence, index) {
         let functionalGroupSequence = this.metaData[sequence];
+        console.log('_findInGroupSequence', functionalGroupSequence, sequence);
 
         if (typeof functionalGroupSequence !== 'undefined') {
             let inSequence = functionalGroupSequence.items[index].dataSet[subsequence];
@@ -660,6 +612,7 @@ export default class CornerstoneDataParser {
     _findStringInGroupSequence(sequence, subsequence, tag, index) {
         // index = 0 if shared!!!
         let dataSet = this._findInGroupSequence(sequence, subsequence, index);
+        console.log('_findStringInGroupSequence', dataSet);
 
         if (dataSet !== null) {
             return getValue(dataSet[tag]);
@@ -675,24 +628,24 @@ export default class CornerstoneDataParser {
         );
     }
 
-    _findStringEverywhere(subsequence, tag, index) {
-        let targetString = this._findStringInFrameGroupSequence(subsequence, tag, index);
-        // PET MODULE
-        if (targetString === null) {
-            const petModule = '00540022';
-            targetString = this._findStringInSequence(petModule, tag);
-        }
-
-        if (targetString === null) {
-            targetString = getValue(this.metaData[tag]);
-        }
-
-        if (typeof targetString === 'undefined') {
-            targetString = null;
-        }
-
-        return targetString;
-    }
+    // _findStringEverywhere(subsequence, tag, index) {
+    //     let targetString = this._findStringInFrameGroupSequence(subsequence, tag, index);
+    //     // PET MODULE
+    //     if (targetString === null) {
+    //         const petModule = '00540022';
+    //         targetString = this._findStringInSequence(petModule, tag);
+    //     }
+    //
+    //     if (targetString === null) {
+    //         targetString = getValue(this.metaData[tag]);
+    //     }
+    //
+    //     if (typeof targetString === 'undefined') {
+    //         targetString = null;
+    //     }
+    //
+    //     return targetString;
+    // }
 
     _findStringInSequence(sequenceTag, tag, index) {
         const sequence = this.metaData[sequenceTag];
