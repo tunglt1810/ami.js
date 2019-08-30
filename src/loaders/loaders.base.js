@@ -1,7 +1,8 @@
 /** Imports **/
 import HelpersProgressBar from '../helpers/helpers.progressbar';
 import EventEmitter from 'events';
-
+import * as Promise from 'bluebird';
+Promise.config({ cancellation: true });
 /**
  *
  * It is typically used to load a DICOM image. Use loading manager for

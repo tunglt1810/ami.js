@@ -1,6 +1,6 @@
 /** * Imports ***/
 
-const PAKO = require('pako');
+// const PAKO = require('pako');
 
 import LoadersBase from './loaders.base';
 import ModelsSeries from '../models/models.series';
@@ -8,7 +8,8 @@ import ModelsStack from '../models/models.stack';
 import ModelsFrame from '../models/models.frame';
 
 import {CornerstoneDataParser} from "../utils";
-
+import * as Promise from 'bluebird';
+Promise.config({ cancellation: true });
 /**
  *
  * It is typically used to load a DICOM image. Use loading manager for

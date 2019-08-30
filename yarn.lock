@@ -1267,6 +1267,11 @@ bluebird@^3.3.0, bluebird@^3.5.1, bluebird@^3.5.2, bluebird@~3.5.0:
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.3.tgz#7d01c6f9616c9a51ab0f8c549a79dfe6ec33efa7"
   integrity sha512-/qKPUQlaW1OyR51WeCPBvRnAlnZFUJkCSG5HzGnuIqhgyJtF+T94lFnn33eiazjRm2LAHVy2guNnaq48X9SJuw==
 
+bluebird@^3.5.5:
+  version "3.5.5"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.5.tgz#a8d0afd73251effbbd5fe384a77d73003c17a71f"
+  integrity sha512-5am6HnnfN+urzt4yfg7IgTbotDjIT/u8AJpEt0sIU9FtXfVeezXAPKswrG+xKUCOYAINpSdgZVDU6QFh+cuH3w==
+
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
@@ -7889,10 +7894,10 @@ text-encoding@0.6.4:
   resolved "https://registry.yarnpkg.com/text-encoding/-/text-encoding-0.6.4.tgz#e399a982257a276dae428bb92845cb71bdc26d19"
   integrity sha1-45mpgiV6J22uQou5KEXLcb3CbRk=
 
-three@latest:
-  version "0.99.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.99.0.tgz#65711fda7a16501da83948121437d824df1fea19"
-  integrity sha512-DmNNq6H6nRGaqxScJ8x7v5VjdtDZR72oTVwDdKbB2BYNFxCkAoo9vdFAznEsMu9YzTV2yFvbVs7qHRzvJZzTIg==
+three@^0.107.0:
+  version "0.107.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.107.0.tgz#0c862c348d61bd3f22058e01f5e771c1294315a1"
+  integrity sha512-vqbKJRLBEviPVa7poEzXocobicwxzsctr5mnymA7n8fEzcVS49rYP0RrwqZ98JqujRoruK+/YzcchNpRP+kXsQ==
 
 through2@^2.0.0:
   version "2.0.5"

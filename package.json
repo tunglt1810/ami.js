@@ -1,6 +1,6 @@
 {
   "name": "ami.js",
-  "version": "0.32.2",
+  "version": "0.32.3",
   "main": "build/ami.js",
   "keywords": [
     "ami",
@@ -55,6 +55,7 @@
   "sideEffects": false,
   "dependencies": {
     "OpenJPEG.js": "joedrago/openjpeg#master",
+    "bluebird": "^3.5.5",
     "cornerstone-core": "^2.3.0",
     "dicom-parser": "^1.8.3",
     "image-JPEG2000": "ReflexionMed/image-JPEG2000#master",
@@ -63,7 +64,7 @@
     "nifti-reader-js": "v0.5.3",
     "nrrd-js": "^0.2.1",
     "pako": "1.0.1",
-    "three": "latest"
+    "three": "^0.107.0"
   },
   "scripts": {
     "precommit": "lint-staged",
